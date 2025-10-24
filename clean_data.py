@@ -47,4 +47,3 @@ output_path = r"C:\Users\Krzysztof\OneDrive\Pulpit\projekt\otodom_cleaned.csv"
 df_expanded.to_csv(output_path, index=False)
 
 print("Plik zapisany:", output_path)
-print(df_expanded[["price_num","surface_num","Longitude","Latitude"]].head())

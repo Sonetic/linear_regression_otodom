@@ -59,4 +59,6 @@ df = df.drop("district", axis=1)
 
 
 df = df[["surface_num", "price_num", "no_of_rooms"] + list(district_dummies.columns)]
-df["bias"] = 1  # klasyczny bias = 1
+df["bias"] = 1
+
+
