@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+
 
 df = pd.read_csv(r"C:\Users\Krzysztof\GitHub\linear_regression_otodom\otodom_cleaned.csv")
 
@@ -30,23 +32,25 @@ def apply_district(lat, lon):
 # dodanie kolumny z dzielnicą i poprawienie innych danych(price, no_of_rooms, surface)
 df["district"] = df.apply(lambda row: apply_district(row["Latitude"], row["Longitude"]), axis=1)
 
-
-
 df["no_of_rooms_num"] = pd.to_numeric(df["no_of_rooms"], errors="coerce")
 df = df.dropna(subset=["no_of_rooms_num"])
 df = df.dropna(subset=["surface_num"])
 df = df.dropna(subset=["price_num"])
 df = df.dropna(subset=["district"])
 
+# *** tutaj filtrujemy ceny poniżej 50 000 PLN ***
+df = df[
+    (df["price_num"] >= 200000) &
+    #(df["price_num"] <= 2000000) &  "better results without flats under 2M pln
+
+    (df["no_of_rooms"] > 2) &
+    (df["no_of_rooms"] < 10) &
+    (df["surface_num"] >= 20)
+]
+
+df = df.dropna(subset=["surface_num", "price_num", "no_of_rooms", "district"])
 
 
-
-
-#sprawdzenie danych
-#print(df["surface_num"].unique())
-#print(df["price_num"].unique())
-#print(df["no_of_rooms_num"].unique())
-#print(df["district"].unique())
 
 # tworzymy kolumny dummy od razu z drop_first=True, w celu ustawienia bazowej dzielnicy
 district_dummies = pd.get_dummies(df["district"], prefix="district", drop_first=True)
@@ -57,8 +61,5 @@ df = pd.concat([df, district_dummies], axis=1)
 # usuwamy oryginalną kolumnę
 df = df.drop("district", axis=1)
 
-
 df = df[["surface_num", "price_num", "no_of_rooms"] + list(district_dummies.columns)]
 df["bias"] = 1
-
-
