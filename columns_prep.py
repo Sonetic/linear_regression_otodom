@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 
-
+# uploading otodom_cleaned.csv
 df = pd.read_csv(r"C:\Users\Krzysztof\GitHub\linear_regression_otodom\otodom_cleaned.csv")
 
-# przybliżone granice dzielnic wwa
+# estimetaed boundries of districts in Warsaw
 warszawa_districts = {
     "Śródmieście": {"lat": (52.21, 52.25), "lon": (21.00, 21.05)},
     "Mokotów": {"lat": (52.15, 52.22), "lon": (21.00, 21.10)},
@@ -23,43 +23,39 @@ warszawa_districts = {
     "Bemowo": {"lat": (52.25, 52.30), "lon": (20.85, 20.95)}
 }
 
+# applying districts
 def apply_district(lat, lon):
     for dzielnica, bounds in warszawa_districts.items():
         if bounds["lat"][0] <= lat <= bounds["lat"][1] and bounds["lon"][0] <= lon <= bounds["lon"][1]:
             return dzielnica
-    return "Inna"
+    return None  # mieszkania poza Warszawą będą odrzucone
 
-# dodanie kolumny z dzielnicą i poprawienie innych danych(price, no_of_rooms, surface)
+# adding district column
 df["district"] = df.apply(lambda row: apply_district(row["Latitude"], row["Longitude"]), axis=1)
 
-df["no_of_rooms_num"] = pd.to_numeric(df["no_of_rooms"], errors="coerce")
-df = df.dropna(subset=["no_of_rooms_num"])
-df = df.dropna(subset=["surface_num"])
-df = df.dropna(subset=["price_num"])
+# dropping rows from other longitude and latitude
 df = df.dropna(subset=["district"])
 
-# *** tutaj filtrujemy ceny poniżej 50 000 PLN ***
+# cleaning
+df["no_of_rooms"] = pd.to_numeric(df["no_of_rooms"], errors="coerce")
+df["surface_num"] = pd.to_numeric(df["surface_num"], errors="coerce")
+df["price_num"] = pd.to_numeric(df["price_num"], errors="coerce")
+df = df.dropna(subset=["no_of_rooms", "surface_num", "price_num"])
+
+# filters to drop extrem values
 df = df[
     (df["price_num"] >= 200000) &
-    #(df["price_num"] <= 2000000) &  "better results without flats under 2M pln
+    (df["price_num"] <= 3000000) &
 
-    (df["no_of_rooms"] > 2) &
-    (df["no_of_rooms"] < 10) &
     (df["surface_num"] >= 20)
 ]
 
-df = df.dropna(subset=["surface_num", "price_num", "no_of_rooms", "district"])
-
-
-
-# tworzymy kolumny dummy od razu z drop_first=True, w celu ustawienia bazowej dzielnicy
+# creating dummie columns, and dropping first column, so it could be the one that we will refer to
 district_dummies = pd.get_dummies(df["district"], prefix="district", drop_first=True)
-
-# dodajemy do df
 df = pd.concat([df, district_dummies], axis=1)
-
-# usuwamy oryginalną kolumnę
 df = df.drop("district", axis=1)
 
+
+# setting the order of columns for the model
 df = df[["surface_num", "price_num", "no_of_rooms"] + list(district_dummies.columns)]
 df["bias"] = 1

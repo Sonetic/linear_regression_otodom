@@ -45,7 +45,7 @@ def predict_price(x_test):
     return (x_vec @ theta).item()
 
 
-# === example usage in the same file ===
+# example usage in file
 if __name__ == "__main__":
     x_test = {c: 0 for c in columns_prep.df.columns if c != "price_num"}
     x_test["surface_num"] = 820

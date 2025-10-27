@@ -1,14 +1,14 @@
 import pandas as pd
 import json
 
-# ścieżka do pliku CSV
+# path to the CSV file
 csv_path = r"C:\Users\Krzysztof\GitHub\linear_regression_otodom\1.csv"
 df = pd.read_csv(csv_path, header=None, names=["json_data"])
 
-# rozpakowanie danych JSON
+# unpack JSON data
 df_expanded = pd.json_normalize(df["json_data"].apply(json.loads))
 
-# funkcja do czyszczenia cen i konwersji walut
+# function to clean price and convert currencies
 def clean_price(price, euro_to_pln=4.25, usd_to_pln=3.66):
     if pd.isna(price):
         return None
@@ -18,14 +18,14 @@ def clean_price(price, euro_to_pln=4.25, usd_to_pln=3.66):
             return float(price.replace("€","")) * euro_to_pln
         elif "$" in price:
             return float(price.replace("$","")) * usd_to_pln
-        else:  # PLN lub brak symbolu
+        else:  # PLN or no symbol
             return float(price.replace("PLN",""))
     except:
         return None
 
 df_expanded["price_num"] = df_expanded["price"].apply(clean_price)
 
-# funkcja do czyszczenia powierzchni
+# function to clean surface area
 def clean_surface(surface):
     if pd.isna(surface):
         return None
@@ -37,13 +37,13 @@ def clean_surface(surface):
 
 df_expanded["surface_num"] = df_expanded["surface"].apply(clean_surface)
 
-# wyciąganie współrzędnych
+# extract coordinates
 df_expanded[["Longitude","Latitude"]] = df_expanded["location"].str.extract(
     r"Longitude: ([\d\.]+) \| Latitude: ([\d\.]+)"
 ).astype(float)
 
-# zapis do CSV
-output_path = r"C:\Users\Krzysztof\OneDrive\Pulpit\projekt\otodom_cleaned.csv"
+# save to CSV
+output_path = r"C:\Users\Krzysztof\GitHub\linear_regression_otodom\otodom_cleaned.csv"
 df_expanded.to_csv(output_path, index=False)
 
-print("Plik zapisany:", output_path)
+print("file saved:", output_path)

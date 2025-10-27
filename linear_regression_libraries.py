@@ -1,52 +1,44 @@
 import columns_prep
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 
-# prepare dataset once
 df = columns_prep.df.copy()
 district_cols = [c for c in df.columns if c.startswith("district_")]
 
-# create interactions
-for d in district_cols:
-    df[f"{d}_x_surface"] = df[d] * df["surface_num"]
-    df[f"{d}_x_rooms"] = df[d] * df["no_of_rooms"]
-
-feature_cols = [c for c in df.columns if c != "price_num"]
-X = df[feature_cols].astype(float).values
+# base features
+base_features = ["surface_num", "no_of_rooms"] + district_cols
+X_base = df[base_features].astype(float).values
 y = df["price_num"].values
 
-numeric_cols = ["surface_num", "no_of_rooms"] + [f"{d}_x_surface" for d in district_cols] + [f"{d}_x_rooms" for d in district_cols]
-numeric_idx = [feature_cols.index(c) for c in numeric_cols]
+# polynomial Features (interactions only, no squares of individual features)
+poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=True)
+X_poly = poly.fit_transform(X_base)
 
-# standardization
+# standardize numeric features only
+numeric_idx = [i for i, f in enumerate(poly.get_feature_names_out(base_features))
+               if "surface_num" in f or "no_of_rooms" in f]
 scaler = StandardScaler()
-X[:, numeric_idx] = scaler.fit_transform(X[:, numeric_idx])
+X_poly[:, numeric_idx] = scaler.fit_transform(X_poly[:, numeric_idx])
 
-# regression model
+# train model
 model = LinearRegression()
-model.fit(X, y)
+model.fit(X_poly, y)
 
+# prediction function
+def predict_price(x_test: dict) -> float:
+    # prepare base feature vector
+    x_vec_base = np.array([x_test.get(f, 0) for f in base_features]).reshape(1, -1)
+    x_vec_poly = poly.transform(x_vec_base)
+    x_vec_poly[:, numeric_idx] = scaler.transform(x_vec_poly[:, numeric_idx])
+    return model.predict(x_vec_poly)[0]
 
-def predict_price(x_test):
-    # prepare test vector
-    for d in district_cols:
-        x_test[f"{d}_x_surface"] = x_test[d] * x_test["surface_num"]
-        x_test[f"{d}_x_rooms"] = x_test[d] * x_test["no_of_rooms"]
-
-    x_vec = np.array([x_test[c] for c in feature_cols]).reshape(1, -1)
-    x_vec[:, numeric_idx] = scaler.transform(x_vec[:, numeric_idx])
-
-    return model.predict(x_vec)[0]
-
-
-# === example usage in the same file ===
+# in file example
 if __name__ == "__main__":
-    x_test = {c: 0 for c in feature_cols}
+    x_test = {f: 0 for f in base_features}
     x_test["surface_num"] = 820
     x_test["no_of_rooms"] = 7
-    x_test["bias"] = 1
     x_test["district_Żoliborz"] = 1
 
     pred = predict_price(x_test)
-    print(f"Predicted price (Sklearn LinearRegression): {pred:,.2f} PLN")
+    print(f"Predicted price (Sklearn LinearRegression + PolynomialFeatures): {pred:,.2f} PLN")

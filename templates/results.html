@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Property Price Predictions</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+        th { background-color: #f0f0f0; }
+        h1, h2 { text-align: center; }
+    </style>
+</head>
+<body>
+<h1>Property Price Predictions</h1>
+
+<h2>Regression Metrics</h2>
+<table>
+    <tr>
+        <th>Model</th>
+        <th>MAE</th>
+        <th>RMSE</th>
+        <th>R²</th>
+    </tr>
+    {% for model, m in metrics.items() %}
+    <tr>
+        <td>{{ model }}</td>
+        <td>{{ "%.2f"|format(m["MAE"]) }}</td>
+        <td>{{ "%.2f"|format(m["RMSE"]) }}</td>
+        <td>{{ "%.4f"|format(m["R2"]) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Predictions for Sample Properties</h2>
+<table>
+    <tr>
+        <th>District</th>
+        <th>Surface (m²)</th>
+        <th>Rooms</th>
+        <th>Actual Price (PLN)</th>
+        <th>Gradient Descent</th>
+        <th>Analytical</th>
+        <th>Sklearn</th>
+    </tr>
+    {% for r in results %}
+    <tr>
+        <td>{{ r["district"] }}</td>
+        <td>{{ r["surface"] }}</td>
+        <td>{{ r["rooms"] }}</td>
+        <td>{{ "%.2f"|format(r["actual"]) }}</td>
+        <td>{{ "%.2f"|format(r["gradient_descent"]) }}</td>
+        <td>{{ "%.2f"|format(r["analytical"]) }}</td>
+        <td>{{ "%.2f"|format(r["sklearn"]) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
