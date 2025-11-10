@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # uploading otodom_cleaned.csv
-df = pd.read_csv(r"C:\Users\Krzysztof\GitHub\linear_regression_otodom\otodom_cleaned.csv")
+df = pd.read_csv("otodom_cleaned.csv")
 
 # estimetaed boundries of districts in Warsaw
 warszawa_districts = {

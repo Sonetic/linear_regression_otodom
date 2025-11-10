@@ -1,6 +1,4 @@
 import os
-import random
-import numpy as np
 import math
 import columns_prep
 from flask import Flask, render_template

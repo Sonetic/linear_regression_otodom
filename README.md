@@ -22,9 +22,9 @@ This project predicts property prices in Warsaw using different linear regressio
 
 
 
-
-
-
+#
+#
+#
 **clean_data.py**
 
 The script processes real estate listings data and prepares it for analysis. The main steps include:
@@ -121,12 +121,22 @@ Main steps:
 
 
 **Model Comparison**
+
+
 Model                   MAE	        RMSE	    R²
-Gradient Descent	242,864.82	360,943.38	0.7003
-Analytical	        242,217.91	359,656.35	0.7024
-Sklearn	            232,881.30	340,883.54	0.7326
+
+Gradient Descent	242,864.82 | 360,943.38 | 0.7003
+
+Analytical	        242,217.91 |	359,656.35 |	0.7024
+
+Sklearn	            232,881.30 |	340,883.54 |	0.7326
 
 
+
+
+
+#
+#
 Summary and Evaluation
 
 All three models successfully predict property prices in Warsaw using the cleaned dataset.

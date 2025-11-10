@@ -48,10 +48,10 @@ def predict_price(x_test):
 # example usage in file
 if __name__ == "__main__":
     x_test = {c: 0 for c in columns_prep.df.columns if c != "price_num"}
-    x_test["surface_num"] = 820
-    x_test["no_of_rooms"] = 7
+    x_test["surface_num"] = 82
+    x_test["no_of_rooms"] = 3
     x_test["bias"] = 1
-    x_test["district_Żoliborz"] = 1
+    x_test["district_Ursynów"] = 1
 
     predicted_price = predict_price(x_test)
     print(f"Predicted price (Analytical): {predicted_price:,.2f} PLN")

@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 # path to the CSV file
-csv_path = r"C:\Users\Krzysztof\GitHub\linear_regression_otodom\1.csv"
+csv_path = "1.csv"
 df = pd.read_csv(csv_path, header=None, names=["json_data"])
 
 # unpack JSON data

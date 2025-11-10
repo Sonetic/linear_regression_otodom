@@ -2,8 +2,6 @@ from linear_regression_gradient_descent import predict_price as predict_price_gr
 from linear_regression_analytical import predict_price as predict_price_analytical
 from linear_regression_libraries import predict_price as predict_price_libraries
 import columns_prep
-import numpy as np
-import random
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import math
 
