@@ -151,3 +151,23 @@ Conclusion:
 The project meets its objectives: cleaning and preparing data, implementing multiple regression methods, and comparing their performance.
 The models perform as expected, the workflow is reproducible, and the web interface successfully displays predictions and metrics. Overall, the project is a success,
 with room for future improvements by including more features or using nonlinear models.
+
+
+##  How to Run
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Sonetic/linear_regression.git
+   cd logistic_regression
+2. Install dependencies:
+   ```bash
+   pip install numpy pandas scikit-learn matplotlib flask
+3. Run 
+   ```bash
+   python clean_data.py
+   python columns_prep.py
+   python linear_regression_analytical.py
+   python linear_regression_gradient_descent.py
+   python linear_regression_libraries.py
+   python test.py
+   python test_site.py
